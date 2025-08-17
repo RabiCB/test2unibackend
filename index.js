@@ -1,8 +1,7 @@
-// index.js
 const http = require('http');
 
-const port = process.env.PORT || 3000; // Use Railway's port
-const hostname = '0.0.0.0'; // Bind to all interfaces
+const port = process.env.PORT || 3000; // Railway-provided port
+const hostname = '0.0.0.0';           // Bind to all network interfaces
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
@@ -13,4 +12,3 @@ const server = http.createServer((req, res) => {
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
-
