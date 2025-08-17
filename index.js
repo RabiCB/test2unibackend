@@ -1,14 +1,15 @@
-const http = require('http');
+const express = require('express');
+const app = express();
 
-const port = process.env.PORT || 3000; // Railway-provided port
-const hostname = '0.0.0.0';           // Bind to all network interfaces
+// Use Railway-provided PORT, fallback to 3000 locally
+const PORT = process.env.PORT || 3000;
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World\n');
+// Define a route
+app.get('/', (req, res) => {
+  res.send('Hello World');
 });
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+// Start the server
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on port ${PORT}`);
 });
