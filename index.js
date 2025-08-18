@@ -1,18 +1,13 @@
-const express = require('express');
+import express from "express";
+import universityRoutes from "./routes/universityRoutes.js";
+
 const app = express();
-
-const port = process.env.PORT || 3000;
-
-app.get('/', (req, res) => {
-  res.send('Hello World from Railway!');
-});
-app.get("/universities", (req, res) => {
-  res.json({ message: "Hello from Railway 🚆" });
-});
+app.use(express.json());
 
 
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server running on port ${port}`);
-});
+app.use("/api/universities", universityRoutes);
 
-
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () =>
+  console.log(`Server running on http://localhost:${PORT}`)
+);
