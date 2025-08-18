@@ -1,12 +1,13 @@
 
-const express=require("express")
-
+const express = require("express");
 const router = express.Router();
+
 
 let sampleUniversities = [
   {
     id: 1,
     name: "Stanford University",
+    slug: "stanford-university",
     country: "United States",
     city: "Stanford, CA",
     ranking: 3,
@@ -28,6 +29,7 @@ let sampleUniversities = [
   {
     id: 2,
     name: "University of Oxford",
+    slug: "university-of-oxford",
     country: "United Kingdom",
     city: "Oxford",
     ranking: 1,
@@ -49,50 +51,108 @@ let sampleUniversities = [
 ];
 
 
+function generateSlug(name) {
+  return name.toLowerCase().replace(/\s+/g, "-");
+}
+
+
 router.get("/", (req, res) => {
-  res.json(sampleUniversities);
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 8;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const paginatedUniversities = sampleUniversities.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(sampleUniversities.length / limit);
+
+    res.json({
+      page,
+      totalPages,
+      totalUniversities: sampleUniversities.length,
+      universities: paginatedUniversities,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
 
-
 router.get("/:id", (req, res) => {
-  const uni = sampleUniversities.find(
-    (u) => u.id === parseInt(req.params.id)
-  );
-  if (!uni) return res.status(404).json({ message: "University not found" });
-  res.json(uni);
+  try {
+    const university = sampleUniversities.find(
+      (u) => u.id === parseInt(req.params.id)
+    );
+    if (!university) return res.status(404).json({ message: "University not found" });
+    res.json(university);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+router.get("/slug/:slug", (req, res) => {
+  try {
+    const university = sampleUniversities.find((u) => u.slug === req.params.slug);
+    if (!university) return res.status(404).json({ message: "University not found" });
+    res.json(university);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
 
 
 router.post("/", (req, res) => {
-  const newUniversity = { id: Date.now(), ...req.body };
-  sampleUniversities.push(newUniversity);
-  res.status(201).json(newUniversity);
+  try {
+    const { name } = req.body;
+    if (!name) return res.status(400).json({ message: "Name is required" });
+
+    const newUniversity = {
+      id: Date.now(),
+      ...req.body,
+      slug: generateSlug(name),
+    };
+
+    sampleUniversities.push(newUniversity);
+    res.status(201).json(newUniversity);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
 
-router.put("/:id", (req, res) => {
-  const index = sampleUniversities.findIndex(
-    (u) => u.id === parseInt(req.params.id)
-  );
-  if (index === -1)
-    return res.status(404).json({ message: "University not found" });
 
-  sampleUniversities[index] = {
-    ...sampleUniversities[index],
-    ...req.body,
-  };
-  res.json(sampleUniversities[index]);
+router.put("/:id", (req, res) => {
+  try {
+    const universityIndex = sampleUniversities.findIndex(
+      (u) => u.id === parseInt(req.params.id)
+    );
+    if (universityIndex === -1) return res.status(404).json({ message: "University not found" });
+
+    const updatedUniversity = {
+      ...sampleUniversities[universityIndex],
+      ...req.body,
+    };
+
+    if (req.body.name) updatedUniversity.slug = generateSlug(req.body.name);
+
+    sampleUniversities[universityIndex] = updatedUniversity;
+    res.json(updatedUniversity);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
 
 
 router.delete("/:id", (req, res) => {
-  const index = sampleUniversities.findIndex(
-    (u) => u.id === parseInt(req.params.id)
-  );
-  if (index === -1)
-    return res.status(404).json({ message: "University not found" });
+  try {
+    const universityIndex = sampleUniversities.findIndex(
+      (u) => u.id === parseInt(req.params.id)
+    );
+    if (universityIndex === -1) return res.status(404).json({ message: "University not found" });
 
-  const deleted = sampleUniversities.splice(index, 1);
-  res.json({ message: "University deleted", deleted });
+    const deletedUniversity = sampleUniversities.splice(universityIndex, 1);
+    res.json({ message: "University deleted", university: deletedUniversity[0] });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
 
-export default router;
+module.exports = router;
