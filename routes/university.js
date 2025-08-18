@@ -1,9 +1,8 @@
-// server/routes/universityRoutes.js
-import express from "express";
+
+const express=require("express")
 
 const router = express.Router();
 
-// Demo data (replace with DB later)
 let sampleUniversities = [
   {
     id: 1,
