@@ -1,0 +1,34 @@
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Universities {
+  id                  Int       @id @default(autoincrement())
+  name                String
+  slug                String    @unique
+  country             String?
+  city                String?
+  ranking             Int?
+  tuitionMin          Int?
+  tuitionMax          Int?
+  acceptanceRate      Float?
+  studentCount        Int?
+  description         String?
+  programs            Json?
+  image              String?  // <-- store array of image URLs
+  applicationDeadline DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model Users {
+  id        Int      @id @default(autoincrement())
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
