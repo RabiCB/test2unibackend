@@ -95,4 +95,84 @@ router.get("/:slug", async (req, res) => {
   }
 });
 
+// POST create a new university
+router.post("/", async (req, res) => {
+  try {
+    const {
+      name,
+      slug,
+      country,
+      city,
+      ranking,
+      tuitionMin,
+      tuitionMax,
+      acceptanceRate,
+      studentCount,
+      description,
+      programs,
+      image,
+      applicationDeadline,
+    } = req.body;
+
+    // Basic validation
+    if (!name || !slug) {
+      return res.status(400).json({ message: "Name and slug are required" });
+    }
+
+    const newUniversity = await prisma.universities.create({
+      data: {
+        name,
+        slug,
+        country,
+        city,
+        ranking: ranking || null,
+        tuitionMin: tuitionMin || null,
+        tuitionMax: tuitionMax || null,
+        acceptanceRate: acceptanceRate || null,
+        studentCount: studentCount || null,
+        description: description || null,
+        programs: programs || null, // JSON field
+        image: image || null, // string or array stored as JSON/string
+        applicationDeadline: applicationDeadline ? new Date(applicationDeadline) : null,
+      },
+    });
+
+    res.status(201).json({ university: newUniversity });
+  } catch (error) {
+    console.error("Error creating university:", error.message);
+    if (error.code === "P2002") {
+      // Prisma unique constraint failed
+      return res.status(400).json({ message: "Slug must be unique" });
+    }
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// DELETE a university by ID
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if the university exists
+    const university = await prisma.universities.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!university) {
+      return res.status(404).json({ message: "University not found" });
+    }
+
+    // Delete the university
+    await prisma.universities.delete({
+      where: { id: Number(id) },
+    });
+
+    res.json({ message: "University deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting university:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 module.exports = router;
