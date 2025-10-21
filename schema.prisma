@@ -20,7 +20,7 @@ model Universities {
   studentCount        Int?
   description         String?
   programs            Json?
-  image              String?  // <-- store array of image URLs
+  image              String?  //  <-- store array of image URLs
   applicationDeadline DateTime?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
