@@ -3,6 +3,7 @@ const cors = require("cors");
 const universityRoutes = require("./routes/university");
 const blogRoute = require("./routes/blogs");
 const readAloudRoutes = require("./routes/readaloud");
+const authRoutes = require("./routes/auth");
 const app = express();
 app.use(express.json());
 
@@ -15,6 +16,9 @@ app.use(cors({
 app.use("/api/readaloud", readAloudRoutes);
 app.use("/api/universities", universityRoutes);
 app.use("/api/blogs", blogRoute);
+app.use("/api/auth", authRoutes);
+app.use("/api/user", require("./routes/user"));
+app.use("/api/stats", require("./routes/stat"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>

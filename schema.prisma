@@ -26,12 +26,7 @@ model Universities {
   updatedAt           DateTime  @updatedAt
 }
 
-model Users {
-  id        Int      @id @default(autoincrement())
-  name String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+
 
 model Blogs {
   id        Int      @id @default(autoincrement())
@@ -53,3 +48,16 @@ model ReadAloudQuestion {
   updatedAt   DateTime @updatedAt
 }
 
+
+
+model User {
+  id              Int       @id @default(autoincrement())
+  name            String
+  email           String    @unique
+  password        String
+  otp             String?   // stores the generated OTP
+  otpExpiresAt    DateTime? // OTP expiry time
+  isVerified      Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
